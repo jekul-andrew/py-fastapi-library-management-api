@@ -13,8 +13,24 @@ def get_author_by_name(db: Session, name: str):
     )
 
 
-def get_all_authors(db: Session):
-    return db.query(models.DBAuthor).all()
+def get_single_author_by_id(db: Session, author_id: int):
+    return (
+        db.query(
+            models.DBAuthor
+        ).filter(
+            models.DBAuthor.id == author_id
+        ).first()
+    )
+
+
+def get_all_authors(
+        db: Session,
+        skip: int = 0,
+        limit: int = 100
+):
+    return db.query(
+        models.DBAuthor
+    ).offset(skip).limit(limit).all()
 
 
 def create_author(
@@ -31,28 +47,35 @@ def create_author(
     return db_author
 
 
-def get_book_list(db: Session, author: str | None = None):
-    queryset = db.query(models.DBBooks)
+def get_book_list(
+        db: Session,
+        author_id: int | None = None,
+        skip: int = 0,
+        limit: int = 100
+):
+    queryset = db.query(models.DBBook)
 
-    if author is None:
-        queryset = queryset.filter(models.DBBooks.author.has(name=author))
+    if author_id is not None:
+        queryset = queryset.filter(
+            models.DBBook.author_id == author_id
+        )
 
-    return queryset.all()
+    return queryset.offset(skip).limit(limit).all()
 
 
 def get_book(db: Session, book_id: int):
     return db.query(
-        models.DBBooks
+        models.DBBook
     ).filter(
-        models.DBBooks.id == book_id
+        models.DBBook.id == book_id
     ).first()
 
 
 def get_book_by_title(db: Session, title: str):
     return db.query(
-        models.DBBooks
+        models.DBBook
     ).filter(
-        models.DBBooks.title == title
+        models.DBBook.title == title
     ).first()
 
 
@@ -60,7 +83,7 @@ def create_book(
         db: Session,
         book: schemas.BookCreate
 ):
-    db_book = models.DBBooks(
+    db_book = models.DBBook(
         title = book.title,
         summary = book.summary,
         publication_date = book.publication_date,

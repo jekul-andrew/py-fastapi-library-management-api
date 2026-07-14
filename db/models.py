@@ -1,14 +1,7 @@
-from enum import StrEnum, auto
-from sqlalchemy import Column, Integer, String, Date, Enum, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import relationship
 
 from db.database import Base
-
-# class PackagingType(StrEnum):
-#     IN_PACKAGE = auto()
-#     WEIGHT = auto()
-
-# books(relationship with the 'Book' model, one-to-many)
 
 class DBAuthor(Base):
 
@@ -17,9 +10,10 @@ class DBAuthor(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(225), nullable=False, unique=True)
     bio = Column(String(511), nullable=False)
+    books = relationship("DBBook", back_populates="author")
 
 
-class DBBooks(Base):
+class DBBook(Base):
 
     __tablename__ = "books"
 
@@ -28,4 +22,4 @@ class DBBooks(Base):
     summary = Column(String(511), nullable=False)
     publication_date = Column(Date, nullable=True)
     author_id = Column(Integer, ForeignKey("author.id"))
-    author = relationship(DBAuthor)
+    author = relationship("DBAuthor", back_populates="books")
