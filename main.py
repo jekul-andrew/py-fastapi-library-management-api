@@ -18,16 +18,11 @@ def get_db() -> Session:
         db.close()
 
 
-@app.get("/")
-def read_root() -> dict[str, str]:
-    return {"message": "Hello FastAPI"}
-
-
 @app.get("/authors/", response_model=list[schemas.Author])
 def get_authors(
         db: Session = Depends(get_db),
         skip: int = 0,
-        limit: int = 100
+        limit: int = 10
 ):
     return crud.get_all_authors(
         db=db,
@@ -69,7 +64,7 @@ def get_books(
         db: Session = Depends(get_db),
         author_id: int | None = None,
         skip: int = 0,
-        limit: int = 100
+        limit: int = 10
 ):
     return crud.get_book_list(
         db=db,
@@ -95,11 +90,11 @@ def create_book(
         book: schemas.BookCreate,
         db: Session = Depends(get_db)
 ):
-    db_book =  crud.get_book_by_title(db=db, title=book.title)
-    if db_book:
-        raise HTTPException(
-            status_code=400,
-            detail="Book with such name already exists"
-        )
+    # db_book =  crud.get_book_by_title(db=db, title=book.title)
+    # if db_book:
+    #     raise HTTPException(
+    #         status_code=400,
+    #         detail="Book with such name already exists"
+    #     )
 
     return crud.create_book(db=db, book=book)
