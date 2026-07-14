@@ -90,11 +90,5 @@ def create_book(
         book: schemas.BookCreate,
         db: Session = Depends(get_db)
 ):
-    # db_book =  crud.get_book_by_title(db=db, title=book.title)
-    # if db_book:
-    #     raise HTTPException(
-    #         status_code=400,
-    #         detail="Book with such name already exists"
-    #     )
 
     return crud.create_book(db=db, book=book)
